@@ -1,0 +1,42 @@
+version: "3.6"
+
+services:
+  nginx:
+    image: nginx:1.25.3
+    network_mode: host
+    volumes:
+      - ./nginx-local.conf:/etc/nginx/nginx.conf:ro
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: "50MB"
+
+  db:
+    image: postgres:16.1
+    hostname: db
+    command: postgres -c 'max_connections=30'
+    environment:
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=rinha
+    network_mode: host
+    volumes:
+      - ./import.sql:/docker-entrypoint-initdb.d/script.sql
+    deploy:
+      resources:
+        limits:
+          # Note que a soma de todos os limites dos serviços
+          # aqui declarados é de 1.5 unidades de CPU e 550MB
+          # de memória. A distribuição feita aqui é apenas
+          # um exemplo – distribua como quiser.
+          cpus: "0.8"
+          memory: "100MB"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+
