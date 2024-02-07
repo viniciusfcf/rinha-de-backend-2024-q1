@@ -31,10 +31,11 @@ public class ClientesResource {
         te.cliente_id = id;
 
         Transacao t = Transacao.of(te);
-        QuarkusTransaction.begin();
-        SaldoCliente saldoCliente = SaldoCliente.findById(id, LockModeType.PESSIMISTIC_WRITE);
-        // TODO testar depois um find com lock e increment direto no java...
         int valor = Integer.parseInt(te.valor);
+        
+        QuarkusTransaction.begin();
+        
+        SaldoCliente saldoCliente = SaldoCliente.findById(id, LockModeType.PESSIMISTIC_WRITE);
         if (te.tipo.equals("c")) {
             saldoCliente.saldo += valor;
         } else {
@@ -50,8 +51,8 @@ public class ClientesResource {
         saldoCliente.persist();
         t.persist();
         QuarkusTransaction.commit();
-        LimiteSaldo limiteSaldo = new LimiteSaldo(saldoCliente.saldo, saldoCliente.limite);
-        return limiteSaldo;
+
+        return new LimiteSaldo(saldoCliente.saldo, saldoCliente.limite);
     }
 
     @GET

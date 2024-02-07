@@ -1,2 +1,1 @@
-./mvnw clean package -DskipTests -Dnative -Dquarkus.native.container-build=true -Dquarkus.container-image.build=true
-docker tag vinicius/viniciusfcf:1.0.0-SNAPSHOT viniciusfcf/rinha-backend-2024q1:latest
+mvn clean package -DskipTests -Dnative -Dquarkus.native.container-build=true -Dquarkus.container-image.build=true
