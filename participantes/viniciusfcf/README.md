@@ -28,3 +28,4 @@ CPU:
     5: 3865 6: 3860 7: 4000 8: 4000 bogomips: 38400
 
   ```
+  ![alt text](image.png)
