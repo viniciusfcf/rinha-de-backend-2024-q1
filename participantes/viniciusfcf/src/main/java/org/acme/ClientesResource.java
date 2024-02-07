@@ -3,13 +3,13 @@ package org.acme;
 import java.time.LocalDateTime;
 
 import io.quarkus.narayana.jta.QuarkusTransaction;
+import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.persistence.LockModeType;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 
@@ -19,6 +19,7 @@ public class ClientesResource {
     @POST
     @Path("/{id}/transacoes")
     @Produces(MediaType.APPLICATION_JSON)
+    @RunOnVirtualThread
     public LimiteSaldo debitarCreditar(@PathParam("id") Integer id, TransacaoEntrada te) {
 
         if (!existeCliente(id)) {
@@ -56,6 +57,7 @@ public class ClientesResource {
     @GET
     @Path("/{id}/extrato")
     @Produces(MediaType.APPLICATION_JSON)
+    @RunOnVirtualThread
     public Extrato extrato(@PathParam("id") Integer id) {
         if (!existeCliente(id)) {
             throw new WebApplicationException(404);

@@ -18,8 +18,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.45"
-          memory: "175MB"
+          cpus: "0.4"
+          memory: "100MB"
     ulimits:
       nproc: 65535
       nofile:
@@ -49,7 +49,7 @@ services:
 
   db:
     image: postgres:16.1
-    command: postgres -c 'max_connections=13' -c 'fsync=off' -c 'synchronous_commit=off' -c 'checkpoint_timeout=1d' -c 'full_page_writes=false'
+    command: postgres -c 'max_connections=13'
     
     hostname: db
     environment:
@@ -66,8 +66,8 @@ services:
           # aqui declarados é de 1.5 unidades de CPU e 550MB
           # de memória. A distribuição feita aqui é apenas
           # um exemplo – distribua como quiser.
-          cpus: "0.4"
-          memory: "150MB"
+          cpus: "0.5"
+          memory: "100MB"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
