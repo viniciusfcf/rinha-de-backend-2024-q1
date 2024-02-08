@@ -23,7 +23,7 @@ CREATE TABLE public.transacao (
 );
 
 CREATE INDEX transacoes_index ON public.transacao (id desc NULLS FIRST) INCLUDE (valor, tipo, descricao, realizada_em, limite, saldo);
-
+create sequence Cliente_SEQ start with 1 increment by 50;
 INSERT INTO public.cliente (id, limite)
 	VALUES
 		(1, 1000 * 100),

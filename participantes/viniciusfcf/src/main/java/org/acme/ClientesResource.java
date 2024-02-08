@@ -2,8 +2,14 @@ package org.acme;
 
 import java.time.LocalDateTime;
 
+import org.jboss.logging.Logger;
+
+import io.quarkus.hibernate.orm.panache.Panache;
 import io.quarkus.narayana.jta.QuarkusTransaction;
+import io.quarkus.runtime.StartupEvent;
 import io.smallrye.common.annotation.RunOnVirtualThread;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
 import jakarta.persistence.LockModeType;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -16,12 +22,24 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/clientes")
 public class ClientesResource {
 
+    @Inject
+    Logger logger;
+
+    void onStart(@Observes StartupEvent se) {
+        logger.info("Apagando transacoes");
+        QuarkusTransaction.begin();
+        Panache.getEntityManager().createNativeQuery("update public.saldocliente set saldo = 0").executeUpdate();
+        Panache.getEntityManager().createNativeQuery("delete from public.transacao").executeUpdate();
+        logger.info("Banco OK");
+        QuarkusTransaction.commit();
+    }
+
     @POST
     @Path("/{id}/transacoes")
     @Produces(MediaType.APPLICATION_JSON)
     @RunOnVirtualThread
     public LimiteSaldo debitarCreditar(@PathParam("id") Integer id, TransacaoEntrada te) {
-
+        
         if (!existeCliente(id)) {
             throw new WebApplicationException(404);
         }
