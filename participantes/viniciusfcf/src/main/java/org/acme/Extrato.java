@@ -1,6 +1,5 @@
 package org.acme;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -8,9 +7,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class Extrato {
 
-    public Saldo saldo = new Saldo();
+    public Saldo saldo;
 
-    public List<Transacao> ultimas_transacoes = new ArrayList<>();
+    public List<Transacao> ultimas_transacoes;
     
-
 }

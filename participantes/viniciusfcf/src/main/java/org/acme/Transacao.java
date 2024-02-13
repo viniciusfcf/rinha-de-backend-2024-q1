@@ -41,7 +41,7 @@ public class Transacao extends PanacheEntityBase {
 
     public static Transacao of(TransacaoEntrada te) {
         Transacao t = new Transacao();
-        t.tipo = te.tipo.charAt(0);
+        t.tipo = te.tipo;
         t.cliente_id = te.cliente_id;
         t.descricao = te.descricao;
         t.realizada_em = LocalDateTime.now();

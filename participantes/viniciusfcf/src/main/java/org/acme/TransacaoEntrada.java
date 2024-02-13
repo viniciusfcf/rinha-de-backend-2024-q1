@@ -12,7 +12,7 @@ public class TransacaoEntrada {
     @JsonIgnore
     public Integer cliente_id;
 
-    public String tipo;
+    public Character tipo;
 
     public String descricao;
 
@@ -22,8 +22,7 @@ public class TransacaoEntrada {
                 && descricao != null
                 && valorEhInteger()
                 && Integer.parseInt(valor) > 0
-                && tipo.length() == 1
-                && (tipo.charAt(0)  == 'c' || tipo.charAt(0) == 'd')
+                && (tipo.charValue() == 'c' || tipo.charValue() == 'd')
                 && descricao.length() > 0
                 && descricao.length() <= 10;
     }
