@@ -3,6 +3,7 @@ package org.acme;
 import java.time.LocalDateTime;
 
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.reactive.RestResponse;
 
 import io.quarkus.hibernate.orm.panache.Panache;
 import io.quarkus.narayana.jta.QuarkusTransaction;
@@ -22,10 +23,8 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/clientes")
 public class ClientesResource {
 
-    static final WebApplicationException NOT_FOUND = new WebApplicationException(404);
-    static final WebApplicationException UNPROCESSABLE = new WebApplicationException(422);
-    
-
+    private static final RestResponse<LimiteSaldo> NOT_FOUND = RestResponse.notFound();
+    private static final RestResponse<LimiteSaldo> UNPROCESSABLE = RestResponse.status(422);
     @Inject
     Logger logger;
 
@@ -42,13 +41,13 @@ public class ClientesResource {
     @Path("/{id}/transacoes")
     @Produces(MediaType.APPLICATION_JSON)
     @RunOnVirtualThread
-    public LimiteSaldo debitarCreditar(@PathParam("id") Integer id, TransacaoEntrada te) {
+    public RestResponse<LimiteSaldo> debitarCreditar(@PathParam("id") Integer id, TransacaoEntrada te) {
         
         if (!existeCliente(id)) {
-            throw NOT_FOUND;
+            return NOT_FOUND;
         }
         if (!te.ehValida()) {
-            throw UNPROCESSABLE;
+            return UNPROCESSABLE;
         }
         te.cliente_id = id;
 
@@ -63,7 +62,7 @@ public class ClientesResource {
         } else {
             if (saldoCliente.saldo - valor < -saldoCliente.limite) {
                 QuarkusTransaction.rollback();
-                throw UNPROCESSABLE;
+                return UNPROCESSABLE;
             }
             saldoCliente.saldo -= valor;
         }
@@ -74,16 +73,16 @@ public class ClientesResource {
         t.persist();
         QuarkusTransaction.commit();
 
-        return new LimiteSaldo(saldoCliente.saldo, saldoCliente.limite);
+        return RestResponse.ok(new LimiteSaldo(saldoCliente.saldo, saldoCliente.limite));
     }
 
     @GET
     @Path("/{id}/extrato")
     @Produces(MediaType.APPLICATION_JSON)
     @RunOnVirtualThread
-    public Extrato extrato(@PathParam("id") Integer id) {
+    public RestResponse<Extrato> extrato(@PathParam("id") Integer id) {
         if (!existeCliente(id)) {
-            throw NOT_FOUND;
+            return RestResponse.notFound();
         }
         Extrato extrato = new Extrato();
         extrato.saldo = new Saldo();
@@ -98,7 +97,7 @@ public class ClientesResource {
             extrato.saldo.total = saldoCliente.saldo;
             extrato.saldo.limite = saldoCliente.limite;
         }
-        return extrato;
+        return RestResponse.ok(extrato);
     }
 
     private boolean existeCliente(int id) {
