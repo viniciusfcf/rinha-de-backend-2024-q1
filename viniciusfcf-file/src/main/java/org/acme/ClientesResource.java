@@ -2,6 +2,8 @@ package org.acme;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -11,6 +13,7 @@ import org.jboss.resteasy.reactive.RestResponse;
 
 import io.quarkus.runtime.StartupEvent;
 import io.smallrye.common.annotation.RunOnVirtualThread;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
@@ -43,7 +46,8 @@ public class ClientesResource {
     @Path("/{id}/transacoes")
     @Produces(MediaType.APPLICATION_JSON)
     @RunOnVirtualThread
-    public RestResponse<LimiteSaldo> debitarCreditar(@PathParam("id") Integer id, TransacaoEntrada te) throws IOException {
+    public RestResponse<LimiteSaldo> debitarCreditar(@PathParam("id") Integer id, TransacaoEntrada te)
+            throws IOException {
 
         if (!existeCliente(id)) {
             return NOT_FOUND;
@@ -57,33 +61,40 @@ public class ClientesResource {
         int valor = Integer.parseInt(te.valor);
 
         String file = id.toString();
-        try (var fileChannel = FileChannel.open(java.nio.file.Path.of(file), java.nio.file.StandardOpenOption.WRITE)) {
+        try (RandomAccessFile writer = new RandomAccessFile(file, "rw")) {
+            FileChannel fileChannel = writer.getChannel();
 
+            var buffer = fileChannel.map(FileChannel.MapMode.READ_WRITE, 0, fileChannel.size());
+            String str = StandardCharsets.UTF_8.decode(buffer).toString();
+            System.out.println("s: " + str);
+            JsonObject jsonObject = new JsonObject(str);
+            JsonObject jsonSaldo = jsonObject.getJsonObject("saldo");
+            
+            JsonArray ultimasTransacoes = jsonObject.getJsonArray("ultimas_transacoes");
+            
+            Integer saldo = jsonSaldo.getInteger("total");
+            Integer limite = jsonSaldo.getInteger("limite");
+            if (te.tipo.charValue() == 'c') {
+                saldo += valor;
+            } else {
+                if (saldo - valor < -limite) {
+                    return UNPROCESSABLE;
+                }
+                saldo -= valor;
+            }
+            jsonSaldo.put("total", saldo);
+            jsonSaldo.put("limite", limite);
+
+            if (ultimasTransacoes.size() == 10) {
+                ultimasTransacoes.remove(ultimasTransacoes.size() - 1);
+            }
+            ultimasTransacoes.add(0, t);
+            ByteBuffer writeBuffer = ByteBuffer.wrap(jsonObject.toString().getBytes(StandardCharsets.UTF_8));
+
+            fileChannel.write(writeBuffer);
+            return RestResponse.ok(new LimiteSaldo(saldo, limite));
         }
 
-        // QuarkusTransaction.begin();
-
-        // SaldoCliente saldoCliente = SaldoCliente.findById(id,
-        // LockModeType.PESSIMISTIC_WRITE);
-        // if (te.tipo.charValue() == 'c') {
-        // saldoCliente.saldo += valor;
-        // } else {
-        // if (saldoCliente.saldo - valor < -saldoCliente.limite) {
-        // // QuarkusTransaction.rollback();
-        // return UNPROCESSABLE;
-        // }
-        // saldoCliente.saldo -= valor;
-        // }
-        // t.limite = saldoCliente.limite;
-        // t.saldo = saldoCliente.saldo;
-
-        // saldoCliente.persist();
-        // t.persist();
-        // QuarkusTransaction.commit();
-
-        // return RestResponse.ok(new LimiteSaldo(saldoCliente.saldo,
-        // saldoCliente.limite));
-        return RestResponse.ok(new LimiteSaldo(1, 2));
     }
 
     @GET
