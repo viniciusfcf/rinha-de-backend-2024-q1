@@ -8,6 +8,7 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.RestResponse;
 
@@ -34,12 +35,8 @@ public class ClientesResource {
     Logger logger;
 
     void onStart(@Observes StartupEvent se) throws IOException {
-        new File("1").createNewFile();
-        new File("2").createNewFile();
-        new File("3").createNewFile();
-        new File("4").createNewFile();
-        new File("5").createNewFile();
-        logger.info("Arquivos OK");
+        logger.info("BASE: " + new File("").getAbsolutePath());
+        logger.info("Arquivos OK? " + new File("1").exists());
     }
 
     @POST
@@ -61,17 +58,18 @@ public class ClientesResource {
         int valor = Integer.parseInt(te.valor);
 
         String file = id.toString();
-        try (RandomAccessFile writer = new RandomAccessFile(file, "rw")) {
-            FileChannel fileChannel = writer.getChannel();
+        try (RandomAccessFile writer = new RandomAccessFile(file, "rw");
+                FileChannel fileChannel = writer.getChannel();
+                var lock = fileChannel.tryLock()) {
 
             var buffer = fileChannel.map(FileChannel.MapMode.READ_WRITE, 0, fileChannel.size());
             String str = StandardCharsets.UTF_8.decode(buffer).toString();
             System.out.println("s: " + str);
             JsonObject jsonObject = new JsonObject(str);
             JsonObject jsonSaldo = jsonObject.getJsonObject("saldo");
-            
+
             JsonArray ultimasTransacoes = jsonObject.getJsonArray("ultimas_transacoes");
-            
+
             Integer saldo = jsonSaldo.getInteger("total");
             Integer limite = jsonSaldo.getInteger("limite");
             if (te.tipo.charValue() == 'c') {

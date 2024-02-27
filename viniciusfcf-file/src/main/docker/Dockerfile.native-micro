@@ -23,6 +23,12 @@ RUN chown 1001 /work \
     && chmod "g+rwX" /work \
     && chown 1001:root /work
 COPY --chown=1001:root target/*-runner /work/application
+COPY --chown=1001:root 1 /work/application/1
+COPY --chown=1001:root 2 /work/application/2
+COPY --chown=1001:root 3 /work/application/3
+COPY --chown=1001:root 4 /work/application/4
+COPY --chown=1001:root 5 /work/application/5
+
 
 EXPOSE 8080
 USER 1001
