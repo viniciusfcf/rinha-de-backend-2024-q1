@@ -1,0 +1,49 @@
+api02-1  | [20.251s] GC(0) Using Serial GC
+api02-1  | [20.251s] GC(0)   Memory: 175M
+api02-1  | [20.251s] GC(0)   Heap policy: adaptive
+api02-1  | [20.251s] GC(0)   Maximum young generation size: 46M
+api02-1  | [20.251s] GC(0)   Maximum heap size: 140M
+api02-1  | [20.251s] GC(0)   Minimum heap size: 16M
+api02-1  | [20.252s] GC(0)   Aligned chunk size: 512K
+api02-1  | [20.252s] GC(0)   Large array threshold: 128K
+api02-1  | [20.252s] GC(0) Collect on allocation
+api02-1  | [20.288s] GC(0)   Eden: 35.50M->0.00M
+api02-1  | [20.288s] GC(0)   Survivor: 0.00M->0.00M
+api02-1  | [20.288s] GC(0)   Old: 0.00M->4.00M
+api02-1  | [20.288s] GC(0)   Free: 0.00M->35.50M
+api02-1  | [20.288s] GC(0) Full GC (Collect on allocation) 35.50M->4.00M 35.939ms
+db-1     | 2024-02-13 17:51:16.536 UTC [71] FATAL:  role "root" does not exist
+api01-1  | [32.672s] GC(1) Collect on allocation
+api01-1  | [32.675s] GC(1)   Eden: 35.50M->0.00M
+api01-1  | [32.675s] GC(1)   Survivor: 0.00M->0.50M
+api01-1  | [32.675s] GC(1)   Old: 4.00M->4.00M
+api01-1  | [32.676s] GC(1)   Free: 0.00M->35.50M
+api01-1  | [32.676s] GC(1) Incremental GC (Collect on allocation) 39.50M->4.50M 3.331ms
+
+
+
+api02-1  | [3.595s] GC(0) Using Serial GC
+api02-1  | [3.595s] GC(0)   Memory: 200M
+api02-1  | [3.595s] GC(0)   Heap policy: by space and time
+api02-1  | [3.595s] GC(0)   Maximum young generation size: 15M
+api02-1  | [3.595s] GC(0)   Maximum heap size: 160M
+api02-1  | [3.595s] GC(0)   Minimum heap size: 31M
+api02-1  | [3.595s] GC(0)   Aligned chunk size: 512K
+api02-1  | [3.595s] GC(0)   Large array threshold: 128K
+api02-1  | [3.595s] GC(0) Collect on allocation
+api02-1  | [3.599s] GC(0)   Eden: 16.00M->0.00M
+api02-1  | [3.599s] GC(0)   Survivor: 0.00M->0.00M
+api02-1  | [3.599s] GC(0)   Old: 0.00M->2.50M
+api02-1  | [3.599s] GC(0)   Free: 0.00M->16.00M
+api02-1  | [3.599s] GC(0) Incremental GC (Collect on allocation) 16.00M->2.50M 3.844ms
+api01-1  | [9.220s] GC(1) Collect on allocation
+api01-1  | [9.223s] GC(1)   Eden: 16.00M->0.00M
+api01-1  | [9.223s] GC(1)   Survivor: 0.00M->0.00M
+api01-1  | [9.223s] GC(1)   Old: 2.50M->3.50M
+api01-1  | [9.223s] GC(1)   Free: 0.00M->16.00M
+api01-1  | [9.223s] GC(1) Incremental GC (Collect on allocation) 18.50M->3.50M 3.128ms
+api02-1  | [9.227s] GC(1) Collect on allocation
+api02-1  | [9.231s] GC(1)   Eden: 16.00M->0.00M
+api02-1  | [9.233s] GC(1)   Survivor: 0.00M->0.00M
+api02-1  | [9.235s] GC(1)   Old: 2.50M->4.00M
+api02-1  | [9.237s] GC(1)   Free: 0.00M->16.00M

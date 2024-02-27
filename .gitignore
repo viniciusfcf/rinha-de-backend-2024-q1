@@ -1,4 +1,6 @@
 /resultados/*/
+postgres-data/*
+
 executar-testes-final.sh
 RESULTADOS.md
 RESULTADOS-HEADER.md

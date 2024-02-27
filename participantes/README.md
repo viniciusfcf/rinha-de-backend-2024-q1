@@ -1,1 +1,0 @@
-faça seu PR ou encontre as maravilhas enviadas para a rinha aqui :)
