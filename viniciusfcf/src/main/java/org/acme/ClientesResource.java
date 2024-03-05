@@ -36,7 +36,22 @@ public class ClientesResource {
         QuarkusTransaction.commit();
         for (int i = 1; i <= 6; i++) {
             Transacao.find("#Transacao.list", 1).page(0, 10).list();
+            SaldoCliente.findById(i);
         }
+        QuarkusTransaction.begin();
+        try {
+            SaldoCliente saldoCliente = new SaldoCliente();
+            saldoCliente.persist();
+        }catch(Exception e) {
+            logger.info("rollback1 ok");
+        }
+        try {
+            Transacao t = new Transacao();
+            t.persist();
+        }catch(Exception e) {
+            logger.info("rollback2 ok");
+        }
+        QuarkusTransaction.rollback();
     }
 
     @POST
