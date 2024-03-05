@@ -17,7 +17,6 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/clientes")
@@ -35,6 +34,9 @@ public class ClientesResource {
         Panache.getEntityManager().createNativeQuery("delete from public.transacao").executeUpdate();
         logger.info("Banco OK");
         QuarkusTransaction.commit();
+        for (int i = 1; i <= 6; i++) {
+            Transacao.find("#Transacao.list", 1).page(0, 10).list();
+        }
     }
 
     @POST
@@ -42,7 +44,7 @@ public class ClientesResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RunOnVirtualThread
     public RestResponse<LimiteSaldo> debitarCreditar(@PathParam("id") Integer id, TransacaoEntrada te) {
-        
+
         if (!existeCliente(id)) {
             return NOT_FOUND;
         }
@@ -53,9 +55,9 @@ public class ClientesResource {
 
         Transacao t = Transacao.of(te);
         int valor = Integer.parseInt(te.valor);
-        
+
         QuarkusTransaction.begin();
-        
+
         SaldoCliente saldoCliente = SaldoCliente.findById(id, LockModeType.PESSIMISTIC_WRITE);
         if (te.tipo.charValue() == 'c') {
             saldoCliente.saldo += valor;
@@ -68,7 +70,7 @@ public class ClientesResource {
         }
         t.limite = saldoCliente.limite;
         t.saldo = saldoCliente.saldo;
-        
+
         saldoCliente.persist();
         t.persist();
         QuarkusTransaction.commit();
@@ -87,7 +89,7 @@ public class ClientesResource {
         Extrato extrato = new Extrato();
         extrato.saldo = new Saldo();
         extrato.saldo.data_extrato = LocalDateTime.now();
-        extrato.ultimas_transacoes = Transacao.find("cliente_id = ?1 order by id desc", id).page(0, 10).list();
+        extrato.ultimas_transacoes = Transacao.find("#Transacao.list", id).page(0, 10).list();
         if (!extrato.ultimas_transacoes.isEmpty()) {
             Transacao ultimaTransacao = extrato.ultimas_transacoes.get(0);
             extrato.saldo.total = ultimaTransacao.saldo;
@@ -102,6 +104,5 @@ public class ClientesResource {
 
     private boolean existeCliente(int id) {
         return id < 6 && id > 0;
-        // return Cliente.findById(id) != null;
     }
 }

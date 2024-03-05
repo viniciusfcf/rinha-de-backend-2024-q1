@@ -12,10 +12,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
 
 @Entity
 @Cacheable
 @RegisterForReflection
+@NamedQueries({
+    @NamedQuery(name = "Transacao.list", query = "select t from Transacao t where cliente_id = ?1 order by id desc")
+})
+
 public class Transacao extends PanacheEntityBase {
 
     @Id
